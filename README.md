@@ -71,7 +71,7 @@ sudo docker-compose exec backend python manage.py collectstatic --no-input
 sudo docker-compose exec backend python manage.py load_tags
 ```
 ```bash
-sudo docker-compose exec backend python manage.py load_ingrs
+sudo docker-compose exec backend python manage.py load_ingredients
 ```
 
 ## Запуск проекта в dev-режиме
