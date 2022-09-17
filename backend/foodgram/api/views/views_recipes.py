@@ -26,7 +26,7 @@ FILENAME = 'shoppingcart.pdf'
 
 class AddDeleteFavoriteRecipe(GetObjectMixin, generics.RetrieveDestroyAPIView,
                               generics.ListCreateAPIView):
-    """Добавление и удаление рецепта в/из избранных."""
+    """Добавление, удаление рецепта  из избранных"""
 
     def create(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -40,7 +40,7 @@ class AddDeleteFavoriteRecipe(GetObjectMixin, generics.RetrieveDestroyAPIView,
 
 class AddDeleteShoppingCart(GetObjectMixin, generics.RetrieveDestroyAPIView,
                             generics.ListCreateAPIView):
-    """Добавление и удаление рецепта в/из корзины."""
+    """Добавление, удаление рецепта в корзине"""
 
     def create(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -53,7 +53,7 @@ class AddDeleteShoppingCart(GetObjectMixin, generics.RetrieveDestroyAPIView,
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
-    """Рецепты."""
+    """Рецепты"""
 
     queryset = Recipe.objects.all()
     filterset_class = RecipeFilter
@@ -65,48 +65,48 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return RecipeWriteSerializer
 
     def get_queryset(self):
-        return Recipe.objects.annotate(
-            is_favorited=Exists(
-                FavoriteRecipe.objects.filter(
-                    user=self.request.user, recipe=OuterRef('id'))),
-            is_in_shopping_cart=Exists(
-                ShoppingCart.objects.filter(
-                    user=self.request.user,
-                    recipe=OuterRef('id')))
-        ).select_related('author').prefetch_related(
-            'tags', 'ingredients', 'recipe',
-            'shopping_cart', 'favorite_recipe'
-        ) if self.request.user.is_authenticated else Recipe.objects.annotate(
-            is_in_shopping_cart=Value(False),
-            is_favorited=Value(False),
-        ).select_related('author').prefetch_related(
-            'tags', 'ingredients', 'recipe',
-            'shopping_cart', 'favorite_recipe')
+        if self.request.user.is_authenticated:
+            is_favorited = Exists(FavoriteRecipe.objects.filter(
+                        user=self.request.user, recipe=OuterRef('id'))),
+            is_in_shopping_cart = Exists(ShoppingCart.objects.filter(
+                        user=self.request.user,
+                        recipe=OuterRef('id')))
+            return Recipe.objects.annotate(
+                is_favorited,
+                is_in_shopping_cart
+            ).select_related('author').prefetch_related(
+                'tags', 'ingredients', 'recipe',
+                'shopping_cart', 'favorite_recipe')
+        else:
+            return Recipe.objects.annotate(
+                is_in_shopping_cart=Value(False),
+                is_favorited=Value(False),
+                ).select_related('author').prefetch_related(
+                    'tags', 'ingredients', 'recipe',
+                    'shopping_cart', 'favorite_recipe')
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(
-        detail=False,
-        methods=['get'],
-        permission_classes=(IsAuthenticated,))
+    @action(detail=False, methods=['get'],
+            permission_classes=(IsAuthenticated,))
     def download_shopping_cart(self, request):
-        """Качаем список с ингредиентами."""
-
+        """Скачивание списка с ингредиентами."""
         buffer = io.BytesIO()
         page = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
         x_position, y_position = 50, 800
         shopping_cart = (
-            request.user.shopping_cart.recipe.
-            values(
+            request.user.shopping_cart.recipe.values(
                 'ingredients__name',
                 'ingredients__measurement_unit'
             ).annotate(amount=Sum('recipe__amount')).order_by())
         page.setFont('Vera', 14)
+
         if shopping_cart:
             indent = 20
             page.drawString(x_position, y_position, 'Cписок покупок:')
+
             for index, recipe in enumerate(shopping_cart, start=1):
                 page.drawString(
                     x_position, y_position - indent,
@@ -119,30 +119,24 @@ class RecipesViewSet(viewsets.ModelViewSet):
                     y_position = 800
             page.save()
             buffer.seek(0)
-            return FileResponse(
-                buffer, as_attachment=True, filename=FILENAME)
+
+            return FileResponse(buffer, as_attachment=True, filename=FILENAME)
+
         page.setFont('Vera', 24)
-        page.drawString(
-            x_position,
-            y_position,
-            'Cписок покупок пуст!')
+        page.drawString(x_position, y_position, 'Cписок покупок пуст!')
         page.save()
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename=FILENAME)
 
 
-class TagsViewSet(
-        PermissionAndPaginationMixin,
-        viewsets.ModelViewSet):
+class TagsViewSet(PermissionAndPaginationMixin, viewsets.ModelViewSet):
     """Список тэгов."""
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
-class IngredientsViewSet(
-        PermissionAndPaginationMixin,
-        viewsets.ModelViewSet):
+class IngredientsViewSet(PermissionAndPaginationMixin, viewsets.ModelViewSet):
     """Список ингредиентов."""
 
     queryset = Ingredient.objects.all()

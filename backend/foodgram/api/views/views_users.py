@@ -96,9 +96,7 @@ class UsersViewSet(UserViewSet):
         password = make_password(self.request.data['password'])
         serializer.save(password=password)
 
-    @action(
-        detail=False,
-        permission_classes=(IsAuthenticated,))
+    @action(detail=False, permission_classes=(IsAuthenticated,))
     def subscriptions(self, request):
         """Получить на кого пользователь подписан."""
 
@@ -113,7 +111,7 @@ class UsersViewSet(UserViewSet):
 
 @api_view(['post'])
 def set_password(request):
-    """Изменить пароль."""
+    """Изменение пароля."""
 
     serializer = UserPasswordSerializer(
         data=request.data,
