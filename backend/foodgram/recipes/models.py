@@ -51,9 +51,7 @@ class Recipe(models.Model):
                               blank=True, null=True)
     text = models.TextField('Описание')
     ingredients = models.ManyToManyField(Ingredient,
-                                         through='RecipeIngredient',
-                                         verbose_name='Ингредиенты',
-                                         related_name='recipes',)
+                                         through='RecipeIngredient')
     tags = models.ManyToManyField(Tag, verbose_name='Тэги',
                                   related_name='recipes')
     cooking_time = models.PositiveSmallIntegerField(
@@ -76,7 +74,7 @@ class RecipeIngredient(models.Model):
     '''Модель состава рецепта'''
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
                                related_name='recipe')
-    ingredient = models.ForeignKey(Ingredient,
+    ingredient = models.ForeignKey('Ingredient',
                                    on_delete=models.CASCADE,
                                    related_name='ingredient')
     amount = models.PositiveSmallIntegerField(
@@ -92,9 +90,6 @@ class RecipeIngredient(models.Model):
         verbose_name_plural = 'Количество ингредиентов'
         constraints = [models.UniqueConstraint(fields=['recipe', 'ingredient'],
                                                name='unique ingredient')]
-
-    def __str__(self):
-        return f'{self.ingredients.name}-{self.amount}'
 
 
 class Subscribe(models.Model):
