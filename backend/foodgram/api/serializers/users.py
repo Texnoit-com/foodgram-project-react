@@ -1,7 +1,8 @@
 import django.contrib.auth.password_validation as validators
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.hashers import make_password
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 
 from recipes.models import Recipe, Subscribe
 
@@ -124,3 +125,13 @@ class SubscribeSerializer(serializers.ModelSerializer):
             else obj.author.recipe.all())
 
         return SubscribeRecipeSerializer(recipes, many=True).data
+
+    def is_create_id(self, request, instance):
+        if request.user.id == instance.id:
+            return Response({'errors': 'На самого себя не подписаться!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def is_follower_filter(self, request, instance):
+        if request.user.follower.filter(author=instance).exists():
+            return Response({'errors': 'Уже подписан!'},
+                            status=status.HTTP_400_BAD_REQUEST)

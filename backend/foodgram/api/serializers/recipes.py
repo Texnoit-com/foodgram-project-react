@@ -112,11 +112,10 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
 
     def create_ingredients(self, ingredients, recipe):
         '''Создание дополнительных игредиентов'''
-        for ingredient in ingredients:
-            RecipeIngredient.objects.create(
+        RecipeIngredient.bulk_creat(
                 recipe=recipe,
-                ingredient_id=ingredient.get('id'),
-                amount=ingredient.get('amount'), )
+                ingredient_id=ingredients.get('id'),
+                amount=ingredients.get('amount'),)
 
     def create(self, validated_data):
         '''Создание рецепта'''

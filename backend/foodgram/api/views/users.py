@@ -38,14 +38,10 @@ class AddAndDeleteSubscribe(generics.RetrieveDestroyAPIView,
         self.check_object_permissions(self.request, user)
         return user
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, serializer_class, *args, **kwargs):
         instance = self.get_object()
-        '''if request.user.id == instance.id:
-            return Response({'errors': 'На самого себя не подписаться!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        if request.user.follower.filter(author=instance).exists():
-            return Response({'errors': 'Уже подписан!'},
-                            status=status.HTTP_400_BAD_REQUEST)'''
+        serializer_class.is_create_id(request, instance)
+        serializer_class.is_follower_filter(request, instance)
         subs = request.user.follower.create(author=instance)
         serializer = self.get_serializer(subs)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
