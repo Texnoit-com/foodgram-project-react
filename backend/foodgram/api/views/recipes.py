@@ -1,14 +1,13 @@
 import io
 
-from api.serializers.serializers_recipes import (IngredientSerializer,
-                                                 RecipeReadSerializer,
-                                                 RecipeWriteSerializer,
-                                                 TagSerializer)
+from api.filters import IngredientFilter, RecipeFilter
+from api.mixins import GetObjectMixin, PermissionAndPaginationMixin
+from api.serializers import (IngredientSerializer, RecipeReadSerializer,
+                             RecipeWriteSerializer, TagSerializer)
 from django.db.models.aggregates import Sum
 from django.db.models.expressions import Exists, OuterRef, Value
 from django.http import FileResponse
-from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
-                            Tag)
+from foodgram.settings import FILENAME
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -18,10 +17,8 @@ from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from .filters import IngredientFilter, RecipeFilter
-from .mixins import GetObjectMixin, PermissionAndPaginationMixin
-
-FILENAME = 'shoppingcart.pdf'
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
+                            Tag)
 
 
 class AddDeleteFavoriteRecipe(GetObjectMixin, generics.RetrieveDestroyAPIView,

@@ -1,21 +1,20 @@
-from api.serializers.serializers_users import (SubscribeSerializer,
-                                               TokenSerializer,
-                                               UserCreateSerializer,
-                                               UserListSerializer,
-                                               UserPasswordSerializer)
+from api.serializers import (SubscribeSerializer, TokenSerializer,
+                             UserCreateSerializer, UserListSerializer,
+                             UserPasswordSerializer)
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.db.models.aggregates import Count
 from django.db.models.expressions import Exists, OuterRef, Value
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from recipes.models import Subscribe
 from rest_framework import generics, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action, api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
+from recipes.models import Subscribe
 
 User = get_user_model()
 
@@ -41,12 +40,12 @@ class AddAndDeleteSubscribe(generics.RetrieveDestroyAPIView,
 
     def create(self, request, *args, **kwargs):
         instance = self.get_object()
-        if request.user.id == instance.id:
+        '''if request.user.id == instance.id:
             return Response({'errors': 'На самого себя не подписаться!'},
                             status=status.HTTP_400_BAD_REQUEST)
         if request.user.follower.filter(author=instance).exists():
             return Response({'errors': 'Уже подписан!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST)'''
         subs = request.user.follower.create(author=instance)
         serializer = self.get_serializer(subs)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

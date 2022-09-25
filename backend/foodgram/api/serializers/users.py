@@ -1,8 +1,9 @@
 import django.contrib.auth.password_validation as validators
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.hashers import make_password
-from recipes.models import Recipe, Subscribe
 from rest_framework import serializers
+
+from recipes.models import Recipe, Subscribe
 
 User = get_user_model()
 ERR_MSG_USER = 'Не удается войти в систему.'

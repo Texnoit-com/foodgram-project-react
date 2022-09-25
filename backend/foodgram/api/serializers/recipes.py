@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from drf_base64.fields import Base64ImageField
-from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from rest_framework import serializers
 
-from .serializers_users import GetIsSubscribedMixin
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
+
+from .users import GetIsSubscribedMixin
 
 User = get_user_model()
 
@@ -14,6 +15,7 @@ ERR_MIN_INGREDIENT = 'Укажите минимум один ингедиент'
 ERR_TAG = 'Данный тег не существует'
 ERR_TIME_COOKING = 'Время приготовления минимум одна минута'
 ERR_MIN_COOKING = 'Укажите минимум один ингредиент в рецепте!'
+
 
 class TagSerializer(serializers.ModelSerializer):
     '''Получение тега'''

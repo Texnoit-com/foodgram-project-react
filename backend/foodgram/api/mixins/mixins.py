@@ -1,5 +1,5 @@
 from api.permissions import IsAdminOrReadOnly
-from api.serializers.serializers_users import SubscribeRecipeSerializer
+from api.serializers import SubscribeRecipeSerializer
 from django.shortcuts import get_object_or_404
 from recipes.models import Recipe
 from rest_framework.permissions import AllowAny
