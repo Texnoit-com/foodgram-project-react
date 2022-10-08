@@ -142,4 +142,4 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 6,
 }
 
-FILENAME = 'shoppingcart.pdf' #формирование файла рецептов
+FILENAME = 'shoppingcart.pdf'
