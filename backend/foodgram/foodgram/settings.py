@@ -8,11 +8,13 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = 'p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
+SECRET_KEY = os.getenv('SECRET_KEY', default='secretkey')
 
 DEBUG = os.getenv('DEBUG', default='True')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '51.250.98.102'
+]
 
 AUTH_USER_MODEL = 'users.User'
 
