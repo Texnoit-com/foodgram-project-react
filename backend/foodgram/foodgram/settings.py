@@ -12,7 +12,9 @@ SECRET_KEY = 'gcm_4tkhv^8bul%ltd%0zbdjxgl&nl@ew8p-#h=44w_5mxz(*t'
 
 DEBUG = os.getenv('DEBUG', default='True')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    '51.250.98.102',
+    ]
 
 AUTH_USER_MODEL = 'users.User'
 
