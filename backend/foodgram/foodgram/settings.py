@@ -14,7 +14,7 @@ DEBUG = os.getenv('DEBUG', default='True')
 
 ALLOWED_HOSTS = [
     '51.250.98.102',
-    ]
+]
 
 AUTH_USER_MODEL = 'users.User'
 
