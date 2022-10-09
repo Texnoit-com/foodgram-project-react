@@ -9,7 +9,7 @@ services:
       - ./.env
 
   backend:
-    image: texnoit/backend:latest
+    image: texnoit/backend:latest1
     restart: always
     volumes:
       - data_value:/code/data/
