@@ -11,7 +11,7 @@ services:
     restart: always
 
   backend:
-    image: insanex/foodgram-backend-bekurin:latest
+    image: texnoit/foodgram-backend-bekurin:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -23,7 +23,7 @@ services:
       - ./.env
 
   frontend:
-    image: insanex/foodgram-frontend-bekurin:latest
+    image: texnoit/foodgram-frontend-bekurin:latest
     volumes:
       - ../frontend/:/app/result_build/
 
