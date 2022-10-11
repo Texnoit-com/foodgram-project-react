@@ -1,1 +1,0 @@
-from api.mixins.mixins import GetObjectMixin, PermissionAndPaginationMixin #noqa
