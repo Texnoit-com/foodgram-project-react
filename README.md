@@ -1,119 +1,128 @@
-# Сайт сборник рецептов 1111
+## Проект Foodgram
 
-12
-## Описание проекта Foodgram
-Приложение, на котором пользователи публикуют рецепты, подписываться на публикации других авторов и добавлять рецепты в избранное. Сервис позволяет пользователю создавать список продуктов, которые нужно купить для приготовления выбранных блюд.
+![Foodgram Workflow](https://github.com/Insnx/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
-## Технологии:
-- Python 3.9
-- Django 3.2
-- Django REST framework 3.12
-- Nginx
-- Docker
-- Postgres
+Foodgram - продуктовый помощник с базой кулинарных рецептов. Позволяет публиковать рецепты, сохранять избранные, а также формировать список покупок для выбранных рецептов. Можно подписываться на любимых авторов.
 
+Проект доступен по [адресу](http://158.160.4.08/)
 
-## Запуск с использованием CI/CD
+Документация к API доступна [здесь](http://158.160.4.0/api/docs/)
 
-Установить docker, docker-compose на сервере ВМ Yandex.Cloud:
-```bash
-ssh username@ip
-sudo apt update && sudo apt upgrade -y && sudo apt install curl -y
-sudo curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && sudo rm get-docker.sh
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+В документации описаны возможные запросы к API и структура ожидаемых ответов. Для каждого запроса указаны уровни прав доступа.
+
+### Технологии:
+
+Python, Django, Django Rest Framework, Docker, Gunicorn, NGINX, PostgreSQL, Yandex Cloud, Continuous Integration, Continuous Deployment
+
+### Развернуть проект на удаленном сервере:
+
+- Клонировать репозиторий:
 ```
-Создайте папку infra:
-```bash
-mkdir infra
-```
-- Перенести файлы docker-compose.yml и default.conf на сервер.
-
-```bash
-scp docker-compose.yml username@server_ip:/home/<username>/
-```
-```bash
-scp default.conf <username>@<server_ip>:/home/<username>/
-```
-- Создайте файл .env в дериктории infra:
-
-```bash
-touch .env
-```
-- Заполнить в настройках репозитория секреты .env
-
-```python
-DB_ENGINE=django.db.backends.postgresql # указываем, что работаем с postgresql
-DB_NAME=postgres # имя базы данных
-POSTGRES_USER=postgres # логин для подключения к базе данных
-POSTGRES_PASSWORD=postgres # пароль для подключения к БД (установите свой)
-DB_HOST=db # название сервиса (контейнера)
-DB_PORT=5432 # порт для подключения к БД
+https://github.com/Insnx/foodgram-project-react.git
 ```
 
-Скопировать на сервер настройки docker-compose.yml, default.conf из папки infra.
+- Установить на сервере Docker, Docker Compose:
 
-## Запуск проекта через Docker
-- В папке infra выполнить команду, что бы собрать контейнер:
-```bash
-sudo docker-compose up -d
+```
+sudo apt install curl                                   # установка утилиты для скачивания файлов
+curl -fsSL https://get.docker.com -o get-docker.sh      # скачать скрипт для установки
+sh get-docker.sh                                        # запуск скрипта
+sudo apt-get install docker-compose-plugin              # последняя версия docker compose
 ```
 
-Для доступа к контейнеру выполните следующие команды:
+- Скопировать на сервер файлы docker-compose.yml, nginx.conf из папки infra (команды выполнять находясь в папке infra):
 
-```bash
-sudo docker-compose exec backend python manage.py makemigrations
 ```
-```bash
-sudo docker-compose exec backend python manage.py migrate --noinput
-```
-```bash
-sudo docker-compose exec backend python manage.py createsuperuser
-```
-```bash
-sudo docker-compose exec backend python manage.py collectstatic --no-input
+scp docker-compose.yml nginx.conf username@IP:/home/username/   # username - имя пользователя на сервере
+                                                                # IP - публичный IP сервера
 ```
 
-Дополнительно можно наполнить DB ингредиентами и тэгами:
-
-```bash
-sudo docker-compose exec backend python manage.py load_tags
+- Для работы с GitHub Actions необходимо в репозитории в разделе Secrets > Actions создать переменные окружения:
 ```
-```bash
-sudo docker-compose exec backend python manage.py load_ingredients
-```
+SECRET_KEY              # секретный ключ Django проекта
+DOCKER_PASSWORD         # пароль от Docker Hub
+DOCKER_USERNAME         # логин Docker Hub
+HOST                    # публичный IP сервера
+USER                    # имя пользователя на сервере
+PASSPHRASE              # *если ssh-ключ защищен паролем
+SSH_KEY                 # приватный ssh-ключ
+TELEGRAM_TO             # ID телеграм-аккаунта для посылки сообщения
+TELEGRAM_TOKEN          # токен бота, посылающего сообщение
 
-## Запуск проекта в dev-режиме
-
-- Установить и активировать виртуальное окружение
-
-```bash
-source /venv/bin/activated
-```
-
-- Установить зависимости из файла requirements.txt
-
-```bash
-python -m pip install --upgrade pip
-```
-```bash
-pip install -r requirements.txt
+DB_ENGINE               # django.db.backends.postgresql
+DB_NAME                 # postgres
+POSTGRES_USER           # postgres
+POSTGRES_PASSWORD       # postgres
+DB_HOST                 # db
+DB_PORT                 # 5432 (порт по умолчанию)
 ```
 
-- Выполнить миграции:
-
-```bash
-python manage.py migrate
+- Создать и запустить контейнеры Docker, выполнить команду на сервере
+*(версии команд "docker compose" или "docker-compose" отличаются в зависимости от установленной версии Docker Compose):*
+```
+sudo docker compose up -d
 ```
 
-- В папке с файлом manage.py выполнить команду:
-```bash
-python manage.py runserver
+- После успешной сборки выполнить миграции:
+```
+sudo docker compose exec backend python manage.py migrate
 ```
 
-### Документация к API доступна после запуска
-```url
-http://127.0.0.1/redoc/
+- Создать суперпользователя:
+```
+sudo docker compose exec backend python manage.py createsuperuser
 ```
 
-Автор: [Бекурин Максим](https://github.com/Texnoit-com)
+- Собрать статику:
+```
+sudo docker compose exec backend python manage.py collectstatic --noinput
+```
+
+- Наполнить базу данных содержимым из файла ingredients.json:
+```
+sudo docker compose exec backend python manage.py loaddata ingredients.json
+```
+
+- Для остановки контейнеров Docker:
+```
+sudo docker compose down -v      # с их удалением
+sudo docker compose stop         # без удаления
+```
+
+### После каждого обновления репозитория (push в ветку master) будет происходить:
+
+1. Проверка кода на соответствие стандарту PEP8 (с помощью пакета flake8)
+2. Сборка и доставка докер-образов frontend и backend на Docker Hub
+3. Разворачивание проекта на удаленном сервере
+4. Отправка сообщения в Telegram в случае успеха
+
+### Запуск проекта на локальной машине:
+
+- Клонировать репозиторий:
+```
+https://github.com/mikhailsoldatkin/foodgram-project-react.git
+```
+
+- В директории infra файл example.env переименовать в .env и заполнить своими данными:
+```
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DB_HOST=db
+DB_PORT=5432
+SECRET_KEY='секретный ключ Django'
+```
+
+- Создать и запустить контейнеры Docker, как указано выше.
+
+
+- После запуска проект будут доступен по адресу: [http://localhost/](http://localhost/)
+
+
+- Документация будет доступна по адресу: [http://localhost/api/docs/](http://localhost/api/docs/)
+
+
+### Автор backend'а:
+
+Бекурин Максим 2022 г.
