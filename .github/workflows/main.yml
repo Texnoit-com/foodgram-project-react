@@ -47,7 +47,7 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-backend-bekurin:latest
 
   build_and_push_frontend_to_docker_hub:
     name: Pushing frontend image to Docker Hub
@@ -69,7 +69,7 @@ jobs:
         with:
           context: ./frontend
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend-bekurin:latest
 
   deploy:
     name: Deploying on remote server
