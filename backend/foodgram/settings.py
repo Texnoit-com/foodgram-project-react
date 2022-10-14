@@ -11,7 +11,7 @@ SECRET_KEY = 'gcm_4tkhv^8bul%ltd%0zbdjxgl&nl@ew8p-#h=44w_5mxz(*t'
 
 DEBUG = True
 #
-ALLOWED_HOSTS = ['158.160.0.64', '127.0.0.1', 'localhost', 'backend:8000', 'backend']
+ALLOWED_HOSTS = ['158.160.0.64', '127.0.0.1', 'localhost', 'backend:8000', 'backend', 'foodgramm.myftp.org']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
